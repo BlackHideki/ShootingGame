@@ -1,0 +1,8 @@
+/**
+ * 
+ */
+/**
+ * @author kudo
+ *
+ */
+package character;
