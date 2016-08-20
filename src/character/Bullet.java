@@ -90,7 +90,6 @@ public class Bullet implements Character {
 	@Override
 	public void action() {
 		if (actionFlg.equals(ActionFlg.MOVE)) {
-			speed = 8;
 			position.x += speed * Math.cos(Math.toRadians(angle));
 			position.y += speed * Math.sin(Math.toRadians(angle));
 

@@ -149,12 +149,12 @@ public class MainScene implements Scene {
 
 		bossBulletList = new ArrayList<>();
 		for (int i = 0; i < 500; i++) {
-			bossBulletList.add(new Bullet("image/enemy_bullet.png", 16, 16, 6));
+			bossBulletList.add(new Bullet("image/enemy_bullet.png", 16, 16, 5));
 		}
 
 		enemyBulletList = new ArrayList<>();
-		for (int i = 0; i < 50 * enemyNum; i++) {
-			enemyBulletList.add(new Bullet("image/enemy_bullet.png", 16, 16, 8));
+		for (int i = 0; i < 30 * enemyNum; i++) {
+			enemyBulletList.add(new Bullet("image/enemy_bullet.png", 16, 16, 5));
 		}
 
 		explosionList = new ArrayList<>();

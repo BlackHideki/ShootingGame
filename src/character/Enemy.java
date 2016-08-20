@@ -276,7 +276,7 @@ public class Enemy implements Character {
 	 */
 	private boolean isShot() {
 		boolean result = false;
-		float shotTime = 0.6f;
+		float shotTime = 0.5f;
 
 		shotTimer -= 1 / 60.0f;
 		if (shotTimer <= 0.0f) {
