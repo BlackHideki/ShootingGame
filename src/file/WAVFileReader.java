@@ -25,6 +25,11 @@ public class WAVFileReader implements Runnable {
 	private boolean loopFlag;
 
 	/**
+	 * 再生フラグ
+	 */
+	private boolean isPlay;
+
+	/**
 	 * コンストラクタ
 	 *
 	 * @param filePath
@@ -37,6 +42,8 @@ public class WAVFileReader implements Runnable {
 		soundFlag = -1;
 
 		loopFlag = false;
+
+		isPlay = false;
 
 		new Thread(this).start();
 	}
@@ -108,6 +115,7 @@ public class WAVFileReader implements Runnable {
 	 */
 	public void play() {
 		loopFlag = false;
+		isPlay = true;
 		soundFlag = 1;
 	}
 
@@ -116,6 +124,7 @@ public class WAVFileReader implements Runnable {
 	 */
 	public void loop() {
 		loopFlag = true;
+		isPlay = true;
 		soundFlag = 2;
 	}
 
@@ -124,6 +133,14 @@ public class WAVFileReader implements Runnable {
 	 */
 	public void stop() {
 		soundFlag = 0;
+		isPlay = false;
 		clip.stop();
+	}
+
+	/**
+	 * 再生状態を取得
+	 */
+	public boolean isPlay() {
+		return isPlay;
 	}
 }

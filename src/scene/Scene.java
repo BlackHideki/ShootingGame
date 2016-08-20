@@ -31,7 +31,7 @@ public interface Scene {
 	/**
 	 * キー解放
 	 */
-	public void keyReleased();
+	public void keyReleased(int key);
 
 	/**
 	 * マウスクリック時

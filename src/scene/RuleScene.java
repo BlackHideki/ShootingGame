@@ -85,7 +85,7 @@ public class RuleScene implements Scene {
 	 * キー解放
 	 */
 	@Override
-	public void keyReleased() {
+	public void keyReleased(int key) {
 	}
 
 	/**

@@ -8,5 +8,6 @@ package flg;
 public enum GameFlg {
 	READY,
 	START,
+	BOSS,
 	END,
 }

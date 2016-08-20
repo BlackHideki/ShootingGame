@@ -28,11 +28,12 @@ public interface Character {
 	/**
 	 * キー解放
 	 */
-	public void keyReleased();
+	public void keyReleased(int key);
 
 	/**
 	 * 描画
 	 * @param graphics
 	 */
 	public void paint(Graphics graphics);
+
 }

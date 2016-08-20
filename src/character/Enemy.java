@@ -2,11 +2,13 @@ package character;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.util.Random;
 
 import base.Execute;
+import etc.DPoint;
 import file.ImageFileReader;
+import flg.ActionFlg;
+import flg.CharacterFlg;
 
 /**
  * エネミーを構築する為のクラス
@@ -14,6 +16,16 @@ import file.ImageFileReader;
  *
  */
 public class Enemy implements Character {
+
+	/**
+	 * キャラクターフラグ
+	 */
+	private CharacterFlg characterFlg;
+
+	/**
+	 * 行動フラグ
+	 */
+	private ActionFlg actionFlg;
 
 	/**
 	 * イメージ
@@ -26,64 +38,60 @@ public class Enemy implements Character {
 	private Dimension size;
 
 	/**
-	 * ランダムを生成するクラス
-	 */
-	private Random random;
-
-	/**
-	 * 表示するX座標のパターンを配列に格納
-	 */
-	private int[] xArray;
-
-	/**
 	 * 表示されているX座標
 	 */
-	private Point position;
+	private DPoint position;
 
 	/**
-	 * 表示するカラーパターンを配列に格納
+	 * X座標の表示位置パターンを配列に格納
 	 */
-	private int[] enemyColor;
+	private double[] xArray;
 
 	/**
-	 * 表示されるエネミーの色
+	 * 移動角度
 	 */
-	private int paintColor;
+	private double angle;
 
 	/**
-	 * 移動速度
+	 * 弾を発射するまでの時間
 	 */
-	private int speed;
+	private float shotTimer;
 
 	/**
-	 * 移動フラグ
+	 * 弾が発射フラグ
 	 */
-	private boolean moveFlg;
+	private boolean shotFlg;
 
 	/**
 	 * Enemy を新しく生成
 	 */
-	public Enemy() {
-		image = new ImageFileReader("images/enemy.png", 700, 500);
+	public Enemy(String imagePath) {
+		image = new ImageFileReader(imagePath);
 
-		size = new Dimension(50, 50);
+		size = new Dimension(image.getSize().width, image.getSize().height);
 
-		random = new Random();
+		position = new DPoint();
 
-		xArray = new int[Execute.WINDOW_WIDTH / size.width];
+		xArray = new double[Execute.WINDOW_WIDTH / size.width];
 		for (int i = 0; i < xArray.length; i++) {
-			xArray[i] = size.width * i;
+			xArray[i] = i * size.width;
 		}
-		position = new Point();
+	}
 
-		enemyColor = new int[9];
-		for (int i = 0; i < enemyColor.length; i++) {
-			enemyColor[i] = size.height * (i + 1);
+	/**
+	 * Enemy を新しく生成
+	 */
+	public Enemy(String imagePath, int width, int height) {
+		image = new ImageFileReader(imagePath, width, height);
+
+		size = new Dimension(image.getSize().width, image.getSize().height);
+
+		position = new DPoint();
+
+		xArray = new double[Execute.WINDOW_WIDTH / size.width];
+		for (int i = 0; i < xArray.length; i++) {
+			xArray[i] = i * size.width;
 		}
-
-		speed = 12;
-
-		moveFlg = false;
 	}
 
 	/**
@@ -91,9 +99,17 @@ public class Enemy implements Character {
 	 */
 	@Override
 	public void init() {
-		paintColor = enemyColor[random.nextInt(enemyColor.length)];
+		characterFlg = CharacterFlg.ALIVE;
+		actionFlg = ActionFlg.READY;
 
-		moveFlg = false;
+		position.x = -1;
+		position.y = -1;
+
+		angle = 0;
+
+		shotTimer = 0.0f;
+
+		shotFlg = false;
 	}
 
 	/**
@@ -101,11 +117,15 @@ public class Enemy implements Character {
 	 */
 	@Override
 	public void action() {
-		if (moveFlg) {
-			if (position.y < Execute.WINDOW_HEIGHT) {
-				position.y += speed;
-			} else {
-				init();
+		if (characterFlg.equals(CharacterFlg.ALIVE) && actionFlg.equals(ActionFlg.MOVE)) {
+			int speed = 3;
+			position.x += speed * Math.cos(Math.toRadians(angle));
+			position.y += speed * Math.sin(Math.toRadians(angle));
+
+			shotFlg = isShot();
+
+			if (position.x < -size.width || position.x > Execute.WINDOW_WIDTH || position.y < -size.height || position.y > Execute.WINDOW_HEIGHT) {
+				actionFlg = ActionFlg.STOP;
 			}
 		}
 	}
@@ -114,22 +134,22 @@ public class Enemy implements Character {
 	 * キー押下
 	 */
 	@Override
-	public void keyPressed(int key) {
-	}
+	public void keyPressed(int key) {}
 
 	/**
 	 * キー解放
 	 */
 	@Override
-	public void keyReleased() {
-	}
+	public void keyReleased(int key) {}
 
 	/**
 	 * 描画
 	 */
 	@Override
 	public void paint(Graphics graphics) {
-		graphics.drawImage(image.getImage().getSubimage(90, paintColor, size.width, size.height), position.x, position.y, null);
+		if (characterFlg.equals(CharacterFlg.ALIVE) && actionFlg.equals(ActionFlg.MOVE)) {
+			graphics.drawImage(image.getImage(), (int)position.x, (int)position.y, null);
+		}
 	}
 
 	/**
@@ -141,7 +161,7 @@ public class Enemy implements Character {
 	}
 
 	/**
-	 * サイズを参照
+	 * サイズを格納
 	 * @param size
 	 */
 	public void setSize(Dimension size) {
@@ -151,44 +171,120 @@ public class Enemy implements Character {
 	/**
 	 * 表示座標を取得
 	 */
-	public Point getPosition() {
+	public DPoint getPosition() {
 		return position;
 	}
 
 	/**
-	 * 表示座標を取得
+	 * 表示座標を格納
 	 */
-	public void setPosition(Point position) {
+	public void setPosition(DPoint position) {
 		this.position = position;
 	}
 
 	/**
-	 * 移動フラグを取得
+	 * キャラクターフラグを取得
 	 * @return
 	 */
-	public boolean getMoveFlg() {
-		return moveFlg;
+	public CharacterFlg getCharacterFlg() {
+		return characterFlg;
 	}
 
 	/**
-	 * 移動フラグを格納
-	 * @param moveFlg
+	 * キャラクターフラグを格納
+	 * @param charFlg
 	 */
-	public void setMoveFlg(boolean moveFlg) {
-		this.moveFlg = moveFlg;
+	public void setCharacterFlg(CharacterFlg charFlg) {
+		this.characterFlg = charFlg;
+	}
+
+	/**
+	 * 行動フラグを取得
+	 * @return
+	 */
+	public ActionFlg getActionFlg() {
+		return actionFlg;
+	}
+
+	/**
+	 * 行動フラグを格納
+	 * @param actionFlg
+	 */
+	public void setActionFlg(ActionFlg actionFlg) {
+		this.actionFlg = actionFlg;
+	}
+
+	/**
+	 * 移動角度を取得
+	 * @return
+	 */
+	public double getAngle() {
+		return angle;
+	}
+
+	/**
+	 * 移動角度を格納
+	 * @param angle
+	 */
+	public void setAngle(double angle) {
+		this.angle = angle;
 	}
 
 	/**
 	 * 表示座標をランダムに格納
 	 * @param x
 	 */
-	public void setPositionRandom(int x) {
-		position.x =xArray[random.nextInt(xArray.length)];
-		while (x == position.x) {
-			position.x =xArray[random.nextInt(xArray.length)];
+	public void setPositionRandom() {
+		Random random = new Random();
+		position.x = xArray[random.nextInt(xArray.length)];
+		position.y = -size.height;
+	}
+
+	/**
+	 * 重複チェック
+	 * @param x
+	 * @return
+	 */
+	public boolean isOverlapPosition(double x) {
+		boolean result = false;
+		if (x == position.x) {
+			result = true;
 		}
 
-		position.y = -size.height;
+		return result;
+	}
+
+	/**
+	 * 弾の発射フラグを取得
+	 * @return
+	 */
+	public boolean isShotFlg() {
+		return shotFlg;
+	}
+
+	/**
+	 * 弾の発射フラグを格納
+	 * @param shotFlg
+	 */
+	public void setShotFlg(boolean shotFlg) {
+		this.shotFlg = shotFlg;
+	}
+
+	/**
+	 * 弾の発射タイミングを取得
+	 * @return
+	 */
+	private boolean isShot() {
+		boolean result = false;
+		float shotTime = 0.6f;
+
+		shotTimer -= 1 / 60.0f;
+		if (shotTimer <= 0.0f) {
+			result = true;
+			shotTimer = shotTime;
+		}
+
+		return result;
 	}
 
 }

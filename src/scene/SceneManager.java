@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.LinkedList;
 
+import etc.Score;
+
 /**
  * 各シーンを管理する為のクラス
  * @author kudouhideki
@@ -30,7 +32,6 @@ public class SceneManager {
 		sceneList.add(new MainScene());
 		sceneList.add(new GameOverScene());
 		sceneList.add(new RankingScene());
-		sceneList.add(new RuleScene());
 
 		currentScene = sceneList.get(0);
 	}
@@ -59,7 +60,7 @@ public class SceneManager {
 			case GAMEOVER:
 				GameOverScene gos = new GameOverScene();
 				MainScene ms = (MainScene)currentScene;
-				gos.setScore(ms.getScore());
+				gos.setScore(Score.getScore());
 				sceneList.set(2, gos);
 				currentScene = sceneList.get(2);
 				break;
@@ -69,7 +70,6 @@ public class SceneManager {
 				break;
 
 			case RULE:
-				currentScene = sceneList.get(4);
 				break;
 			}
 			init();
@@ -89,8 +89,8 @@ public class SceneManager {
 	/**
 	 * キーが離された瞬間に呼び出される
 	 */
-	public void keyReleased() {
-		currentScene.keyReleased();
+	public void keyReleased(int key) {
+		currentScene.keyReleased(key);
 	}
 
 	/**

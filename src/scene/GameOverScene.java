@@ -1,6 +1,7 @@
 package scene;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -30,6 +31,11 @@ public class GameOverScene implements Scene {
 	 * 背景
 	 */
 	private ImageFileReader bg;
+
+	/**
+	 * ロゴ
+	 */
+	private ImageFileReader gameOverLogo;
 
 	/**
 	 * メニューリトライ
@@ -90,13 +96,15 @@ public class GameOverScene implements Scene {
 	 * GameOverScene を新しく生成
 	 */
 	public GameOverScene () {
-		bg = new ImageFileReader("images/game_over.png");
+		bg = new ImageFileReader("image/game_over_bg.png");
 
-		menuRetry = new ImageFileReader("images/menu_retry.png", 99, 50);
+		gameOverLogo = new ImageFileReader("image/game_over_logo.png");
 
-		menuTitle = new ImageFileReader("images/menu_title.png", 93, 50);
+		menuRetry = new ImageFileReader("image/menu_retry.png", 90, 50);
 
-		cursor = new ImageFileReader("images/player.png", 120, 160);
+		menuTitle = new ImageFileReader("image/menu_title.png", 77, 50);
+
+		cursor = new ImageFileReader("image/player.png", 120, 80);
 
 		ranking = new TextFileReader("text/ranking.txt");
 
@@ -182,6 +190,7 @@ public class GameOverScene implements Scene {
 
 		case KeyEvent.VK_ENTER:
 			dicideSE.play();
+			bgm.stop();
 			if (currentPosition.equals(cursorPositionList.get(0))) {
 				sceneFlg = SceneFlg.MAIN;
 			} else {
@@ -196,7 +205,7 @@ public class GameOverScene implements Scene {
 	 * キー解放
 	 */
 	@Override
-	public void keyReleased() {
+	public void keyReleased(int key) {
 	}
 
 	/**
@@ -213,13 +222,16 @@ public class GameOverScene implements Scene {
 	public void paint(Graphics graphics) {
 		graphics.drawImage(bg.getImage(), 0, 0, null);
 
+		graphics.drawImage(gameOverLogo.getImage(), Execute.WINDOW_WIDTH / 2 - gameOverLogo.getSize().width / 2, Execute.WINDOW_HEIGHT / 8, null);
+
 		graphics.drawImage(menuRetry.getImage(), Execute.WINDOW_WIDTH / 2 - menuRetry.getSize().width / 2, Execute.WINDOW_HEIGHT / 2, null);
 
 		graphics.drawImage(menuTitle.getImage(), Execute.WINDOW_WIDTH / 2 - menuTitle.getSize().width / 2, Execute.WINDOW_HEIGHT / 2 + menuRetry.getSize().height, null);
 
-		graphics.drawImage(cursor.getImage().getSubimage(40, 120, 40, 40), currentPosition.x, currentPosition.y, null);
+		Dimension cursorSize = new Dimension(40, 40);
+		graphics.drawImage(cursor.getImage().getSubimage(0, cursorSize.height, cursorSize.width, cursorSize.height), currentPosition.x, currentPosition.y, null);
 
-		graphics.setColor(Color.BLACK);
+		graphics.setColor(Color.BLUE);
 		graphics.setFont(new Font("メイリオ", Font.BOLD, 50));
 		graphics.drawString("SCORE : " + score, Execute.WINDOW_WIDTH / 2 - 150, Execute.WINDOW_HEIGHT / 2 + menuRetry.getSize().height * 3);
 	}

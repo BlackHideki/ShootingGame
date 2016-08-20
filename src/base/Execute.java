@@ -22,7 +22,7 @@ public class Execute {
 	 * @param args
 	 */
 	public static void main(String[] args){
-		GameFunctionBase gw = new GameFunctionBase("FastestFingerFirst2", WINDOW_WIDTH, WINDOW_HEIGHT);
+		GameFunctionBase gw = new GameFunctionBase("ShootingGame", WINDOW_WIDTH, WINDOW_HEIGHT);
 		gw.setVisible(true);
 	}
 

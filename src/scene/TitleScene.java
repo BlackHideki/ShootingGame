@@ -1,5 +1,6 @@
 package scene;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -44,11 +45,6 @@ public class TitleScene implements Scene {
 	private ImageFileReader menuRanking;
 
 	/**
-	 * メニュールール
-	 */
-	private ImageFileReader menuRule;
-
-	/**
 	 * カーソル
 	 */
 	private ImageFileReader cursor;
@@ -69,6 +65,11 @@ public class TitleScene implements Scene {
 	private WAVFileReader dicideSE;
 
 	/**
+	 * カーソルサイズ
+	 */
+	private Dimension cursorSize;
+
+	/**
 	 * カーソルの表示座標
 	 */
 	private ArrayList<Point> cursorPositionList;
@@ -79,20 +80,23 @@ public class TitleScene implements Scene {
 	private Point currentPosition;
 
 	/**
+	 * キーフラグ
+	 */
+	private boolean keyFlg;
+
+	/**
 	 * TitleScene を新しく生成
 	 */
 	public TitleScene () {
-		bg = new ImageFileReader("images/bg.png");
+		bg = new ImageFileReader("image/title_bg.jpg", 800, 600);
 
-		logo = new ImageFileReader("images/title_logo.png", 500, 150);
+		logo = new ImageFileReader("image/title_logo.png");
 
-		menuStart = new ImageFileReader("images/menu_start.png", 101, 50);
+		menuStart = new ImageFileReader("image/menu_start.png", 86, 50);
 
-		menuRanking = new ImageFileReader("images/menu_ranking.png", 152, 50);
+		menuRanking = new ImageFileReader("image/menu_ranking.png", 138, 50);
 
-		menuRule = new ImageFileReader("images/menu_rule.png", 88, 50);
-
-		cursor = new ImageFileReader("images/player.png", 120, 160);
+		cursor = new ImageFileReader("image/player.png", 120, 80);
 
 		bgm = new WAVFileReader("sound/title_bgm.wav");
 
@@ -100,10 +104,11 @@ public class TitleScene implements Scene {
 
 		dicideSE = new WAVFileReader("sound/dicide.wav");
 
+		cursorSize = new Dimension(40, 40);
+
 		cursorPositionList = new ArrayList<>();
-		cursorPositionList.add(new Point(Execute.WINDOW_WIDTH / 2 - menuStart.getSize().width, Execute.WINDOW_HEIGHT / 2 - menuStart.getSize().height));
+		cursorPositionList.add(new Point(Execute.WINDOW_WIDTH / 2 - menuStart.getSize().width - cursorSize.width / 2, Execute.WINDOW_HEIGHT / 2 - menuStart.getSize().height));
 		cursorPositionList.add(new Point(Execute.WINDOW_WIDTH / 2 - menuRanking.getSize().width, Execute.WINDOW_HEIGHT / 2));
-		cursorPositionList.add(new Point(Execute.WINDOW_WIDTH / 2 - menuRule.getSize().width, Execute.WINDOW_HEIGHT / 2 + menuRule.getSize().height));
 
 		currentPosition = cursorPositionList.get(0);
 	}
@@ -116,6 +121,8 @@ public class TitleScene implements Scene {
 		sceneFlg = null;
 
 		bgm.loop();
+
+		keyFlg = false;
 	}
 
 	/**
@@ -133,34 +140,35 @@ public class TitleScene implements Scene {
 	public void keyPressed(int key) {
 		switch (key) {
 		case KeyEvent.VK_UP:
-			if(currentPosition.equals(cursorPositionList.get(1))) {
-				cursorSE.play();
-				currentPosition = cursorPositionList.get(0);
-			} else if (currentPosition.equals(cursorPositionList.get(2))) {
-				cursorSE.play();
-				currentPosition = cursorPositionList.get(1);
+			if (!keyFlg) {
+				if(currentPosition.equals(cursorPositionList.get(1))) {
+					cursorSE.play();
+					currentPosition = cursorPositionList.get(0);
+				}
+				keyFlg = true;
 			}
 			break;
 
 		case KeyEvent.VK_DOWN:
-			if(currentPosition.equals(cursorPositionList.get(0))) {
-				cursorSE.play();
-				currentPosition = cursorPositionList.get(1);
-			} else if (currentPosition.equals(cursorPositionList.get(1))) {
-				cursorSE.play();
-				currentPosition = cursorPositionList.get(2);
+			if (!keyFlg) {
+				if(currentPosition.equals(cursorPositionList.get(0))) {
+					cursorSE.play();
+					currentPosition = cursorPositionList.get(1);
+				}
+				keyFlg = true;
 			}
 			break;
 
 		case KeyEvent.VK_ENTER:
-			dicideSE.play();
-			if(currentPosition.equals(cursorPositionList.get(0))) {
-				sceneFlg = SceneFlg.MAIN;
-				bgm.stop();
-			} else if (currentPosition.equals(cursorPositionList.get(1))) {
-				sceneFlg = SceneFlg.RANKING;
-			} else {
-				sceneFlg = SceneFlg.RULE;
+			if (!keyFlg) {
+				dicideSE.play();
+				if(currentPosition.equals(cursorPositionList.get(0))) {
+					sceneFlg = SceneFlg.MAIN;
+					bgm.stop();
+				} else if (currentPosition.equals(cursorPositionList.get(1))) {
+					sceneFlg = SceneFlg.RANKING;
+				}
+				keyFlg = true;
 			}
 			break;
 		}
@@ -170,7 +178,8 @@ public class TitleScene implements Scene {
 	 * キー解放
 	 */
 	@Override
-	public void keyReleased() {
+	public void keyReleased(int key) {
+		keyFlg = false;
 	}
 
 	/**
@@ -187,15 +196,13 @@ public class TitleScene implements Scene {
 	public void paint(Graphics graphics) {
 		graphics.drawImage(bg.getImage(), 0, 0, null);
 
-		graphics.drawImage(logo.getImage(), Execute.WINDOW_WIDTH / 2 - logo.getSize().width / 2, Execute.WINDOW_HEIGHT / 5, null);
+		graphics.drawImage(logo.getImage(), Execute.WINDOW_WIDTH / 2 - logo.getSize().width / 2, Execute.WINDOW_HEIGHT / 8, null);
 
 		graphics.drawImage(menuStart.getImage(), Execute.WINDOW_WIDTH / 2 - menuStart.getSize().width / 2, Execute.WINDOW_HEIGHT / 2 - menuStart.getSize().height, null);
 
 		graphics.drawImage(menuRanking.getImage(), Execute.WINDOW_WIDTH / 2 - menuRanking.getSize().width / 2, Execute.WINDOW_HEIGHT / 2, null);
 
-		graphics.drawImage(menuRule.getImage(), Execute.WINDOW_WIDTH / 2 - menuRule.getSize().width / 2, Execute.WINDOW_HEIGHT / 2 + menuRule.getSize().height, null);
-
-		graphics.drawImage(cursor.getImage().getSubimage(40, 0, 40, 40), currentPosition.x, currentPosition.y, null);
+		graphics.drawImage(cursor.getImage().getSubimage(0, cursorSize.height, cursorSize.width, cursorSize.height), currentPosition.x, currentPosition.y, null);
 	}
 
 	/**

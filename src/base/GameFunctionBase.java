@@ -20,11 +20,6 @@ public class GameFunctionBase extends JFrame {
 	private GameMechanism glb;
 
 	/**
-	 * キーの状態(押下：true　非押下：false)
-	 */
-	private boolean keyFlg;
-
-	/**
 	 * 指定されたタイトル、ウィンドウの幅、高さのウィンドウを新しく生成する
 	 * @param title ウィンドウのヘッドに表示される文字列
 	 * @param width ウィンドウの幅
@@ -48,24 +43,16 @@ public class GameFunctionBase extends JFrame {
 	    glb.init();
 
 	    add(glb);
-
-	    keyFlg = false;
 	}
 
 	/**
 	 * キーイベント
 	 */
 	protected void processKeyEvent(KeyEvent e) {
-		if(e.getID() == KeyEvent.KEY_PRESSED){
-			if(!keyFlg){
-				keyFlg = true;
+		if (e.getID() == KeyEvent.KEY_PRESSED) {
 				glb.keyPressed(e.getKeyCode());
-			}
-		}else if(e.getID() == KeyEvent.KEY_RELEASED){
-			if(keyFlg){
-				keyFlg = false;
-				glb.keyReleased();
-			}
+		}else if (e.getID() == KeyEvent.KEY_RELEASED) {
+				glb.keyReleased(e.getKeyCode());
 		}
 	}
 
@@ -73,9 +60,9 @@ public class GameFunctionBase extends JFrame {
 	 * マウスイベント
 	 */
 	protected void processMouseEvent(MouseEvent e) {
-		if(e.getID() == MouseEvent.MOUSE_PRESSED){
+		if (e.getID() == MouseEvent.MOUSE_PRESSED) {
 			glb.mouseClick(e.getPoint());
-		}else if(e.getID() == MouseEvent.MOUSE_RELEASED){}
+		}else if (e.getID() == MouseEvent.MOUSE_RELEASED){}
 	}
 
 	/**

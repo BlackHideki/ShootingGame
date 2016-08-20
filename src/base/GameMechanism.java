@@ -79,8 +79,8 @@ public class GameMechanism extends JPanel implements Runnable {
 	/**
 	 * キーが離された瞬間に呼び出される
 	 */
-	public void keyReleased() {
-		sceneManager.keyReleased();
+	public void keyReleased(int key) {
+		sceneManager.keyReleased(key);
 	}
 
 	/**
